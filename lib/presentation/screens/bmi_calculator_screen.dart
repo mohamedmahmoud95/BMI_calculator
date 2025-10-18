@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../data/view_models/bmi_view_model.dart';
 import '../../domain/models/bmi_input.dart';
-import '../widgets/action_buttons.dart';
 import '../widgets/bmi_result_display.dart';
 import '../widgets/error_display.dart';
-import '../widgets/gender_selector.dart';
-import '../widgets/input_fields.dart';
 
 class BMICalculatorScreen extends StatefulWidget {
   const BMICalculatorScreen({super.key});
@@ -40,6 +37,34 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
     if (_weightController.text != _viewModel.weightText) {
       _weightController.text = _viewModel.weightText;
     }
+  }
+
+  void _incrementHeight() {
+    final currentValue = double.tryParse(_heightController.text) ?? 0;
+    final newValue = (currentValue + 1).clamp(50, 250);
+    _heightController.text = newValue.toString();
+    _viewModel.updateHeight(_heightController.text);
+  }
+
+  void _decrementHeight() {
+    final currentValue = double.tryParse(_heightController.text) ?? 0;
+    final newValue = (currentValue - 1).clamp(50, 250);
+    _heightController.text = newValue.toString();
+    _viewModel.updateHeight(_heightController.text);
+  }
+
+  void _incrementWeight() {
+    final currentValue = double.tryParse(_weightController.text) ?? 0;
+    final newValue = (currentValue + 0.5).clamp(20, 300);
+    _weightController.text = newValue.toString();
+    _viewModel.updateWeight(_weightController.text);
+  }
+
+  void _decrementWeight() {
+    final currentValue = double.tryParse(_weightController.text) ?? 0;
+    final newValue = (currentValue - 0.5).clamp(20, 300);
+    _weightController.text = newValue.toString();
+    _viewModel.updateWeight(_weightController.text);
   }
 
   @override
@@ -93,8 +118,8 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
     return Column(
       children: [
         Icon(
-          Icons.favorite,
-          size: 32,
+          Icons.monitor_heart_rounded,
+          size: 30,
           color: Theme.of(context).colorScheme.primary,
         ),
         const SizedBox(height: 16),
@@ -142,7 +167,7 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -208,8 +233,8 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: gender == Gender.male 
-                                  ? const Color(0xFF3498DB).withOpacity(0.1)
-                                  : const Color(0xFFE91E63).withOpacity(0.1),
+                                  ? const Color(0xFF3498DB).withValues(alpha: 0.1)
+                                  : const Color(0xFFE91E63).withValues(alpha: 0.1),
                             ),
                             child: Icon(
                               gender == Gender.male ? Icons.male : Icons.female,
@@ -246,27 +271,21 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
         const SizedBox(height: 20),
         _buildInputField(
           label: 'Height (cm)',
-          child: TextField(
+          child: _buildNumberInputField(
             controller: _heightController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              hintText: 'Enter your height',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
+            hintText: 'Enter your height',
+            onIncrement: () => _incrementHeight(),
+            onDecrement: () => _decrementHeight(),
           ),
         ),
         const SizedBox(height: 20),
         _buildInputField(
           label: 'Weight (kg)',
-          child: TextField(
+          child: _buildNumberInputField(
             controller: _weightController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              hintText: 'Enter your weight',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
+            hintText: 'Enter your weight',
+            onIncrement: () => _incrementWeight(),
+            onDecrement: () => _decrementWeight(),
           ),
         ),
       ],
@@ -288,6 +307,79 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
         const SizedBox(height: 8),
         child,
       ],
+    );
+  }
+
+  Widget _buildNumberInputField({
+    required TextEditingController controller,
+    required String hintText,
+    required VoidCallback onIncrement,
+    required VoidCallback onDecrement,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: hintText,
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                hintStyle: const TextStyle(color: Color(0xFF95A5A6)),
+              ),
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 40,
+            color: const Color(0xFFE0E0E0),
+          ),
+          Column(
+            children: [
+              _buildArrowButton(
+                icon: Icons.keyboard_arrow_up,
+                onTap: onIncrement,
+              ),
+              Container(
+                width: 1,
+                height: 1,
+                color: const Color(0xFFE0E0E0),
+              ),
+              _buildArrowButton(
+                icon: Icons.keyboard_arrow_down,
+                onTap: onDecrement,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildArrowButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40,
+        height: 20,
+        decoration: const BoxDecoration(
+          color: Color(0xFFF8F9FA),
+        ),
+        child: Icon(
+          icon,
+          size: 16,
+          color: const Color(0xFF7F8C8D),
+        ),
+      ),
     );
   }
 
