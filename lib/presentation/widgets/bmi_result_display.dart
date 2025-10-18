@@ -18,7 +18,7 @@ class BMIResultDisplay extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(10),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -26,14 +26,14 @@ class BMIResultDisplay extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(
-            'Your BMI',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF2C3E50),
-            ),
-          ),
+                  Text(
+                    'Your BMI',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
           const SizedBox(height: 16),
           Text(
             result.value.toStringAsFixed(1),
@@ -44,14 +44,14 @@ class BMIResultDisplay extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            'Health Status',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF2C3E50),
-            ),
-          ),
+                  Text(
+                    'Health Status',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
           const SizedBox(height: 8),
           Text(
             result.category,
@@ -61,6 +61,16 @@ class BMIResultDisplay extends StatelessWidget {
               color: result.color,
             ),
           ),
+
+           const SizedBox(height: 8),
+          Text(
+            result.guidance,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+
         ],
       ),
     );
